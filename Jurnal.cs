@@ -8,7 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.IO.Compression;
+using System.Windows.Forms;
 
 namespace ED_Informator
 {
@@ -16,7 +17,7 @@ namespace ED_Informator
     {
         DateTime lastTimeStamp;
         long offset = 0;
-        
+        String coriolis_s = EDF1.coriolis;
         //EDF1 EDI1 = new EDF1(); 
         //funkcja odczytująca ostatni plik jurnala ED, podczas uruchomiamianai aplikacji EDI
         public void Open_get(String JurnalLastFile) 
@@ -39,8 +40,25 @@ namespace ED_Informator
                 {
                     var f = new NumberFormatInfo { NumberGroupSeparator = " " };
                     //var s = d.ToString("n", f); // 2 000 000.00
-                    EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
-                    EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
+                    EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
+                    LinkLabel.Link links = new LinkLabel.Link();
+                    if (ReadJurnal.Ship_Localised == "SRV Scarab")
+                    {
+                        EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                        EDF1.instance.shipName.Links.Remove(links);
+                        links.Enabled = false;
+                        EDF1.instance.shipName.Links.Add(links);
+                    }
+                    else
+                    {
+                        EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                        EDF1.instance.shipName.Links.Remove(links);
+                        links.Enabled = true;
+                        EDF1.instance.shipName.Links.Add(links);
+                    }
+
+
+
                     EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
                 }
                 else if (ReadJurnal.@event == "Location")
@@ -51,6 +69,27 @@ namespace ED_Informator
                 else if (ReadJurnal.@event == "SuitLoadout")
                 {
                     EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
+                }
+                else if (ReadJurnal.@event == "Loadout")
+                {
+                    byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
+
+                    using (var outputStream = new MemoryStream())
+                    {
+                        using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                            gZipStream.Write(inputBytes, 0, inputBytes.Length);
+
+                        var outputBytes = outputStream.ToArray();
+
+                        var outputbase64 = Convert.ToBase64String(outputBytes);
+
+                        outputbase64 = outputbase64.Replace("=", "%3D");
+                        coriolis_s = "https://coriolis.io/import?data=" + outputbase64;
+                        
+                        EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64; 
+                    }                       
+
+                    
                 }
                 lastTimeStamp = ReadJurnal.timestamp;
                 
@@ -80,9 +119,24 @@ namespace ED_Informator
                     {
                         var f = new NumberFormatInfo { NumberGroupSeparator = " " };
                         //var s = d.ToString("n", f); // 2 000 000.00
-                        EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
-                        EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
-                        EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
+                        EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
+                        LinkLabel.Link links = new LinkLabel.Link();
+                        if (ReadJurnal.Ship_Localised == "SRV Scarab")
+                        {
+                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                            EDF1.instance.shipName.Links.Remove(links);
+                            links.Enabled = false;
+                            EDF1.instance.shipName.Links.Add(links);
+                        }
+                        else
+                        {
+                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                            EDF1.instance.shipName.Links.Remove(links);
+                            links.Enabled = true;
+                            EDF1.instance.shipName.Links.Add(links);
+                        }
+
+                    EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
                     }
                     else if (ReadJurnal.@event == "Location")
                     {
@@ -93,7 +147,28 @@ namespace ED_Informator
                     {
                         EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
                     }
-                    lastTimeStamp = ReadJurnal.timestamp;
+                    else if (ReadJurnal.@event == "Loadout")
+                    {
+                        byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
+
+                        using (var outputStream = new MemoryStream())
+                        {
+                            using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                                gZipStream.Write(inputBytes, 0, inputBytes.Length);
+
+                            var outputBytes = outputStream.ToArray();
+
+                            var outputbase64 = Convert.ToBase64String(outputBytes);
+
+                            outputbase64 = outputbase64.Replace("=", "%3D");
+                            coriolis_s = "https://coriolis.io/import?data=" + outputbase64;
+
+                            EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64;
+                        }
+
+
+                    }
+                lastTimeStamp = ReadJurnal.timestamp;
                 offset = file.Position;
                 //    EDF1.instance.outfitValue_z.Text = lastTimeStamp.ToString();
             }
@@ -103,6 +178,9 @@ namespace ED_Informator
 
         public void read_file(string changeFile)
         {
+            //if (offset == 0)
+           //     return;
+
             string linia_jurnal;
             
                         
@@ -110,79 +188,130 @@ namespace ED_Informator
             StreamReader reader = new StreamReader(file);
             
             file.Seek(offset, SeekOrigin.Begin);
+            
             while (!reader.EndOfStream)
             {
                 linia_jurnal = reader.ReadLine();
 
+                linia_jurnal = linia_jurnal.Replace("part\":{", "part_s\":{");
                 linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
                 linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
                 linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
                 if (linia_jurnal != "")
                 {
                     var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
-                
 
-                    if (ReadJurnal.@event == "LoadGame")
+
+                    if (ReadJurnal.@event == "LoadGame") //Odczytujemy podstawowe informacje o lokalizacji gracza (Statek, SRV, saldo kasy, itp)
                     {
                         var f = new NumberFormatInfo { NumberGroupSeparator = " " };
                         //var s = d.ToString("n", f); // 2 000 000.00
-                        EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
-                        EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
+                        EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
+                        LinkLabel.Link links = new LinkLabel.Link();
+                        if (ReadJurnal.Ship_Localised == "SRV Scarab")
+                        {
+                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                            EDF1.instance.shipName.Links.Remove(links);
+                            links.Enabled = false;
+                            EDF1.instance.shipName.Links.Add(links);
+                        }
+                        else
+                        {
+                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                            EDF1.instance.shipName.Links.Remove(links);
+                            links.Enabled = true;
+                            EDF1.instance.shipName.Links.Add(links);
+                        }
+
+
+
                         EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
                     }
-                    else if (ReadJurnal.@event == "Location")
+                    else if (ReadJurnal.@event == "Location") //odczytujemy informacje o systemie w którym gracz się znajduje i stacji jesłi statek został zadokowany
                     {
                         EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
                         EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
                     }
-                    else if (ReadJurnal.@event == "SuitLoadout")
+                    else if (ReadJurnal.@event == "SuitLoadout") //odczytujemy informacje o stroju jaki ma założony gracz. Opcja dostępna dopiero po wyjściu ze statku na planetę lub stację
                     {
                         EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
                     }
-                }
-                
-                
-
-//                EDF1.instance.outfitValue_z.Text = lastTimeStamp.ToString();
-
-            }
-            offset = file.Position;
-            /*if (!reader.EndOfStream)
-                {
-                    do
+                    else if (ReadJurnal.@event == "Loadout") //odczytujemy wszystkie informacje o statku i tworzymy link do Coriolis. Informacja dostępna tylko jeśli gracz jest w statku
                     {
-                        linia_jurnal = reader.ReadLine();
+                        byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
 
-                        linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
-                        linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
-                        linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
-
-                        var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
-                        if (ReadJurnal.@event == "LoadGame")
+                        using (var outputStream = new MemoryStream())
                         {
-                            var f = new NumberFormatInfo { NumberGroupSeparator = " " };
-                            //var s = d.ToString("n", f); // 2 000 000.00
-                            EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
-                            EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
-                            EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
+                            using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                                gZipStream.Write(inputBytes, 0, inputBytes.Length);
+
+                            var outputBytes = outputStream.ToArray();
+
+                            var outputbase64 = Convert.ToBase64String(outputBytes);
+
+                            outputbase64 = outputbase64.Replace("=", "%3D");
+                            coriolis_s = "https://coriolis.io/import?data=" + outputbase64;
+
+                            EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64;
                         }
-                        else if (ReadJurnal.@event == "Location")
+
+
+                    }
+                    else if (ReadJurnal.@event == "MaterialCollected")
+                    {
+                        int rowID = EDF1.instance.listaZnalezisk_z.Rows.Add();
+                        DataGridViewRow row = EDF1.instance.listaZnalezisk_z.Rows[rowID];
+                        row.Cells["col_time"].Value = ReadJurnal.timestamp;
+                        row.Cells["col_event"].Value = "Zebrano materiał";
+                        row.Cells["col_desc"].Value = ReadJurnal.Name_Localised + " w ilości: " + ReadJurnal.Count.ToString();
+                        row.Cells["col_info"].Value = ReadJurnal.Category + ": ??????, Łączna ilość: xxx";
+
+
+                    }
+
+
+
+                    //                EDF1.instance.outfitValue_z.Text = lastTimeStamp.ToString();
+
+                }
+            }
+                offset = file.Position;
+                /*if (!reader.EndOfStream)
+                    {
+                        do
                         {
-                            EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
-                            EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
-                        }
-                        else if (ReadJurnal.@event == "SuitLoadout")
-                        {
-                            EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
-                        }
-                        lastTimeStamp = ReadJurnal.timestamp;
-                    } while (!reader.EndOfStream);
+                            linia_jurnal = reader.ReadLine();
 
-                    offset = file.Position;
-                }*/
+                            linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
+                            linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
+                            linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
 
-            file.Close();
+                            var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
+                            if (ReadJurnal.@event == "LoadGame")
+                            {
+                                var f = new NumberFormatInfo { NumberGroupSeparator = " " };
+                                //var s = d.ToString("n", f); // 2 000 000.00
+                                EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
+                                EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
+                                EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
+                            }
+                            else if (ReadJurnal.@event == "Location")
+                            {
+                                EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
+                                EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
+                            }
+                            else if (ReadJurnal.@event == "SuitLoadout")
+                            {
+                                EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
+                            }
+                            lastTimeStamp = ReadJurnal.timestamp;
+                        } while (!reader.EndOfStream);
 
+                        offset = file.Position;
+                    }*/
+
+                file.Close();
+            
         }
 
         //odczytujemy ED JUrnal - dane główne
@@ -190,7 +319,7 @@ namespace ED_Informator
         {
             public DateTime timestamp { get; set; }
             public string @event { get; set; }
-            public int part { get; set; }
+            public int part_s { get; set; }
             public string language { get; set; }
             public bool Odyssey { get; set; }
             public string gameversion { get; set; }
@@ -304,7 +433,106 @@ namespace ED_Informator
             public long LoadoutID { get; set; }
             public string LoadoutName { get; set; }
             public List<BioData> BioData { get; set; }
-     
+            public string Status { get; set; }
+            public string MusicTrack { get; set; }
+            public string JumpType { get; set; }
+            public string StarClass { get; set; }
+            public int RemainingJumpsInRoute { get; set; }
+            public double Scooped { get; set; }
+            public double Total { get; set; }
+            public double Progress { get; set; }
+            public int BodyCount { get; set; }
+            public int NonBodyCount { get; set; }
+            public string SystemName { get; set; }
+            public string ScanType { get; set; }
+            public string BodyName { get; set; }
+            public List<Parent> Parents { get; set; }
+            public double DistanceFromArrivalLS { get; set; }
+            public string StarType { get; set; }
+            public int Subclass { get; set; }
+            public double StellarMass { get; set; }
+            public double Radius { get; set; }
+            public double AbsoluteMagnitude { get; set; }
+            public int Age_MY { get; set; }
+            public double SurfaceTemperature { get; set; }
+            public string Luminosity { get; set; }
+            public double SemiMajorAxis { get; set; }
+            public double Eccentricity { get; set; }
+            public double OrbitalInclination { get; set; }
+            public double Periapsis { get; set; }
+            public double OrbitalPeriod { get; set; }
+            public double AscendingNode { get; set; }
+            public double MeanAnomaly { get; set; }
+            public double RotationPeriod { get; set; }
+            public double AxialTilt { get; set; }
+            public bool WasDiscovered { get; set; }
+            public bool WasMapped { get; set; }
+            public bool TidalLock { get; set; }
+            public string TerraformState { get; set; }
+            public string PlanetClass { get; set; }
+            public string Atmosphere { get; set; }
+            public string AtmosphereType { get; set; }
+            public List<AtmosphereComposition> AtmosphereComposition { get; set; }
+            public string Volcanism { get; set; }
+            public double MassEM { get; set; }
+            public double SurfaceGravity { get; set; }
+            public double SurfacePressure { get; set; }
+            public bool Landable { get; set; }
+            public Composition Composition { get; set; }
+            public double JumpDist { get; set; }
+            public double FuelUsed { get; set; }
+            public string USSType { get; set; }
+            public string USSType_Localised { get; set; }
+            public string SpawningState { get; set; }
+            public string SpawningFaction { get; set; }
+            public int ThreatLevel { get; set; }
+            public double TimeRemaining { get; set; }
+            public string SpawningFaction_Localised { get; set; }
+            public string SpawningState_Localised { get; set; }
+            public List<Signal> Signals { get; set; }
+            public List<Conflict> Conflicts { get; set; }
+            public int USSThreat { get; set; }
+            public double FuelMain { get; set; }
+            public double FuelReservoir { get; set; }
+            public string Category { get; set; }
+            public string Name_Localised { get; set; }
+            public int DiscoveryNumber { get; set; }
+            public int ProbesUsed { get; set; }
+            public int EfficiencyTarget { get; set; }
+            public bool OnStation { get; set; }
+            public bool OnPlanet { get; set; }
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
+            public string NearestDestination { get; set; }
+            public bool PlayerControlled { get; set; }
+            public string SRVType { get; set; }
+            public string SRVType_Localised { get; set; }
+            public string Loadout { get; set; }
+            public int ID { get; set; }
+            public string Type { get; set; }
+            public string Type_Localised { get; set; }
+            public bool SRV { get; set; }
+            public int Reward { get; set; }
+            public string VictimFaction { get; set; }
+            public string PayeeFaction { get; set; }
+            public bool TargetLocked { get; set; }
+            public int ScanStage { get; set; }
+            public string PilotName { get; set; }
+            public string PilotName_Localised { get; set; }
+            public string PilotRank { get; set; }
+            public string SquadronID { get; set; }
+            public double ShieldHealth { get; set; }
+            public string LegalStatus { get; set; }
+            //////////////////////////////////
+            
+
+
+
+
+
+
+
+            ////////////////////
         }
 
         //odczytujemy ED Jurnal - dane zagnieżdzone
@@ -430,7 +658,9 @@ namespace ED_Informator
         public class SystemFaction
         {
             public string Name { get; set; }
+            public string FactionState { get; set; }
         }
+
         public class BankAccount
         {
             public int Current_Wealth { get; set; }
@@ -661,6 +891,53 @@ namespace ED_Informator
             public int Count { get; set; }
         }
 
+        public class Parent
+        {
+            public int Ring { get; set; }
+            public int Star { get; set; }
+            public int Null { get; set; }
 
+        }
+
+        public class AtmosphereComposition
+        {
+            public string Name { get; set; }
+            public double Percent { get; set; }
+        }
+
+        public class Composition
+        {
+            public double Ice { get; set; }
+            public double Rock { get; set; }
+            public double Metal { get; set; }
+        }
+        public class Signal
+        {
+            public string Type { get; set; }
+            public string Type_Localised { get; set; }
+            public int Count { get; set; }
+        }
+
+        public class Faction1
+        {
+            public string Name { get; set; }
+            public string Stake { get; set; }
+            public int WonDays { get; set; }
+        }
+
+        public class Faction2
+        {
+            public string Name { get; set; }
+            public string Stake { get; set; }
+            public int WonDays { get; set; }
+        }
+
+        public class Conflict
+        {
+            public string WarType { get; set; }
+            public string Status { get; set; }
+            public Faction1 Faction1 { get; set; }
+            public Faction2 Faction2 { get; set; }
+        }
     }
 }

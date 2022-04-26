@@ -53,21 +53,24 @@ namespace ED_Informator
             this.cmdrName = new System.Windows.Forms.Label();
             this.shipLabel = new System.Windows.Forms.Label();
             this.outfitLabel = new System.Windows.Forms.Label();
-            this.shipName = new System.Windows.Forms.Label();
+            this.test_label = new System.Windows.Forms.Label();
             this.outfitValue = new System.Windows.Forms.Label();
             this.systemLabel = new System.Windows.Forms.Label();
             this.systemValue = new System.Windows.Forms.Label();
             this.stationLabel = new System.Windows.Forms.Label();
             this.stationName = new System.Windows.Forms.Label();
             this.listaZnalezisk = new System.Windows.Forms.DataGridView();
-            this.col1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.col2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
+            this.shipName = new System.Windows.Forms.LinkLabel();
+            this.col_time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.col_event = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.col_desc = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.col_info = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listaZnalezisk)).BeginInit();
@@ -99,7 +102,7 @@ namespace ED_Informator
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(682, 337);
+            this.linkLabel1.Location = new System.Drawing.Point(297, 233);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(19, 13);
             this.linkLabel1.TabIndex = 2;
@@ -116,9 +119,9 @@ namespace ED_Informator
             this.szacowZarobValue,
             this.rzeczZarobLabel,
             this.rzeczZarobValue});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 480);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 481);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(956, 24);
+            this.statusStrip1.Size = new System.Drawing.Size(954, 24);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -198,7 +201,7 @@ namespace ED_Informator
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(956, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(954, 24);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -271,13 +274,13 @@ namespace ED_Informator
             this.outfitLabel.Text = "Strój:";
             this.outfitLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // shipName
+            // test_label
             // 
-            this.shipName.Location = new System.Drawing.Point(313, 25);
-            this.shipName.Name = "shipName";
-            this.shipName.Size = new System.Drawing.Size(159, 13);
-            this.shipName.TabIndex = 8;
-            this.shipName.Text = "Unidentified Ship";
+            this.test_label.Location = new System.Drawing.Point(509, 187);
+            this.test_label.Name = "test_label";
+            this.test_label.Size = new System.Drawing.Size(159, 13);
+            this.test_label.TabIndex = 8;
+            this.test_label.Text = "dddd";
             // 
             // outfitValue
             // 
@@ -329,6 +332,7 @@ namespace ED_Informator
             // 
             // listaZnalezisk
             // 
+            this.listaZnalezisk.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(254)));
@@ -339,8 +343,10 @@ namespace ED_Informator
             this.listaZnalezisk.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.listaZnalezisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.listaZnalezisk.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.col1,
-            this.col2});
+            this.col_time,
+            this.col_event,
+            this.col_desc,
+            this.col_info});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(254)));
@@ -349,7 +355,8 @@ namespace ED_Informator
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.listaZnalezisk.DefaultCellStyle = dataGridViewCellStyle2;
-            this.listaZnalezisk.Location = new System.Drawing.Point(7, 6);
+            this.listaZnalezisk.EnableHeadersVisualStyles = false;
+            this.listaZnalezisk.Location = new System.Drawing.Point(3, 0);
             this.listaZnalezisk.Name = "listaZnalezisk";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
@@ -359,25 +366,16 @@ namespace ED_Informator
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.listaZnalezisk.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.listaZnalezisk.RowHeadersVisible = false;
             this.listaZnalezisk.Size = new System.Drawing.Size(932, 379);
             this.listaZnalezisk.TabIndex = 14;
             this.listaZnalezisk.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listaZnalezisk_CellContentClick);
-            // 
-            // col1
-            // 
-            this.col1.HeaderText = "Nazwa";
-            this.col1.Name = "col1";
-            // 
-            // col2
-            // 
-            this.col2.HeaderText = "Typ";
-            this.col2.Name = "col2";
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(0, 61);
+            this.tabControl1.Location = new System.Drawing.Point(12, 71);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(955, 417);
@@ -399,6 +397,8 @@ namespace ED_Informator
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.button2);
             this.tabPage2.Controls.Add(this.button1);
+            this.tabPage2.Controls.Add(this.linkLabel1);
+            this.tabPage2.Controls.Add(this.test_label);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -426,35 +426,69 @@ namespace ED_Informator
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // shipName
+            // 
+            this.shipName.ActiveLinkColor = System.Drawing.Color.Blue;
+            this.shipName.DisabledLinkColor = System.Drawing.Color.Black;
+            this.shipName.Location = new System.Drawing.Point(313, 25);
+            this.shipName.Name = "shipName";
+            this.shipName.Size = new System.Drawing.Size(159, 13);
+            this.shipName.TabIndex = 16;
+            this.shipName.TabStop = true;
+            this.shipName.Text = "Unidentified Ship";
+            this.shipName.VisitedLinkColor = System.Drawing.Color.Blue;
+            this.shipName.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.shipName_LinkClicked);
+            // 
+            // col_time
+            // 
+            this.col_time.HeaderText = "Czas";
+            this.col_time.Name = "col_time";
+            // 
+            // col_event
+            // 
+            this.col_event.HeaderText = "Zdarzenie";
+            this.col_event.Name = "col_event";
+            // 
+            // col_desc
+            // 
+            this.col_desc.HeaderText = "Opis";
+            this.col_desc.Name = "col_desc";
+            // 
+            // col_info
+            // 
+            this.col_info.HeaderText = "Informacje";
+            this.col_info.Name = "col_info";
+            // 
             // EDF1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = global::ED_Informator.Properties.Settings.Default.Size;
+            this.Controls.Add(this.shipName);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.stationName);
             this.Controls.Add(this.stationLabel);
             this.Controls.Add(this.systemValue);
             this.Controls.Add(this.systemLabel);
             this.Controls.Add(this.outfitValue);
-            this.Controls.Add(this.shipName);
             this.Controls.Add(this.outfitLabel);
             this.Controls.Add(this.shipLabel);
             this.Controls.Add(this.cmdrName);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.cmdrLabel);
             this.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::ED_Informator.Properties.Settings.Default, "Location", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.DataBindings.Add(new System.Windows.Forms.Binding("ClientSize", global::ED_Informator.Properties.Settings.Default, "Size", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(254)));
             this.Location = global::ED_Informator.Properties.Settings.Default.Location;
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(970, 544);
             this.Name = "EDF1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "ED Informator";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.EDF1_FormClosed);
             this.Load += new System.EventHandler(this.EDF1_Load);
+            this.Shown += new System.EventHandler(this.EDF1_Shown);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -486,26 +520,29 @@ namespace ED_Informator
         private System.Windows.Forms.Label cmdrName;
         private System.Windows.Forms.Label shipLabel;
         private System.Windows.Forms.Label outfitLabel;
-        private System.Windows.Forms.Label shipName;
+        private System.Windows.Forms.Label test_label;
         private System.Windows.Forms.Label outfitValue;
         private System.Windows.Forms.Label systemLabel;
         private System.Windows.Forms.Label systemValue;
         private System.Windows.Forms.Label stationLabel;
         private System.Windows.Forms.Label stationName;
-        private System.Windows.Forms.DataGridView listaZnalezisk;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripStatusLabel rzeczZarobLabel;
         private System.Windows.Forms.ToolStripStatusLabel rzeczZarobValue;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn col1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn col2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem sprawdźAktualizacjęToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem oAplikacjiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem politykaPrywatnościToolStripMenuItem;
         private System.Windows.Forms.Button button2;
+        public System.Windows.Forms.LinkLabel shipName;
+        private System.Windows.Forms.DataGridView listaZnalezisk;
+        private System.Windows.Forms.DataGridViewTextBoxColumn col_time;
+        private System.Windows.Forms.DataGridViewTextBoxColumn col_event;
+        private System.Windows.Forms.DataGridViewTextBoxColumn col_desc;
+        private System.Windows.Forms.DataGridViewTextBoxColumn col_info;
     }
 }
 
