@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ED_Informator
 {
@@ -22,28 +23,33 @@ namespace ED_Informator
         //funkcja odczytująca ostatni plik jurnala ED, podczas uruchomiamianai aplikacji EDI
         public void Open_get(String JurnalLastFile) 
         {
+            Debug.Print("Jurnal krok A1");
             string linia_jurnal;
             FileStream file = File.Open(JurnalLastFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             StreamReader reader = new StreamReader(file);
 
-            
+            Debug.Print("Jurnal krok A2");
             while (!reader.EndOfStream)
             {
+                Debug.Print("Jurnal krok A3");
                 linia_jurnal = reader.ReadLine();
-
-                linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
-                linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
-                linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
-
+                Debug.Print("Jurnal krok A4");
+                processing_line(linia_jurnal);
+                /*
+                linia_jurnal = replace_jurnal(linia_jurnal);
+                Debug.Print("Jurnal krok A5");
+                Debug.Print(linia_jurnal);
                 var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
                 if (ReadJurnal.@event == "LoadGame")
                 {
+                    Debug.Print("Jurnal krok A6");
                     var f = new NumberFormatInfo { NumberGroupSeparator = " " };
                     //var s = d.ToString("n", f); // 2 000 000.00
                     EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
                     LinkLabel.Link links = new LinkLabel.Link();
                     if (ReadJurnal.Ship_Localised == "SRV Scarab")
                     {
+                        Debug.Print("Jurnal krok A7");
                         EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
                         EDF1.instance.shipName.Links.Remove(links);
                         links.Enabled = false;
@@ -51,6 +57,7 @@ namespace ED_Informator
                     }
                     else
                     {
+                        Debug.Print("Jurnal krok A8");
                         EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
                         EDF1.instance.shipName.Links.Remove(links);
                         links.Enabled = true;
@@ -58,24 +65,28 @@ namespace ED_Informator
                     }
 
 
-
-                    EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
+                    Debug.Print("Jurnal krok A9");
+                    EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("C");
                 }
                 else if (ReadJurnal.@event == "Location")
                 {
+                    Debug.Print("Jurnal krok A10");
                     EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
                     EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
                 }
                 else if (ReadJurnal.@event == "SuitLoadout")
                 {
+                    Debug.Print("Jurnal krok A11");
                     EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
                 }
                 else if (ReadJurnal.@event == "Loadout")
                 {
+                    Debug.Print("Jurnal krok A12");
                     byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
 
                     using (var outputStream = new MemoryStream())
                     {
+                        Debug.Print("Jurnal krok A13");
                         using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
                             gZipStream.Write(inputBytes, 0, inputBytes.Length);
 
@@ -87,13 +98,15 @@ namespace ED_Informator
                         coriolis_s = "https://coriolis.io/import?data=" + outputbase64;
                         
                         EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64; 
-                    }                       
+                    }
+                    Debug.Print("Jurnal krok A14");
 
-                    
                 }
-                lastTimeStamp = ReadJurnal.timestamp;
+                */
+                //lastTimeStamp = ReadJurnal.timestamp;
                 
             }
+            Debug.Print("Jurnal krok A15");
             file.Close();
 
         }
@@ -101,147 +114,235 @@ namespace ED_Informator
         //funkcja odczytująca świeżo utwqorzony plik ED
         public void pre_read_file(string newFile)
         {
+            Debug.Print("Jurnal krok B1");
             string linia_jurnal ;
             FileStream file = File.Open(newFile,FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
             StreamReader reader = new StreamReader(file);
-                        
+            Debug.Print("Jurnal krok B2");                        
             
-                while (!reader.EndOfStream)
+            while (!reader.EndOfStream)
+            {
+                Debug.Print("Jurnal krok B3");
+                linia_jurnal = reader.ReadLine();
+                processing_line(linia_jurnal);
+                /*linia_jurnal = replace_jurnal(linia_jurnal);
+                Debug.Print("Jurnal krok B4");
+                var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
+                if (ReadJurnal.@event == "LoadGame")
                 {
-                    linia_jurnal = reader.ReadLine();
-
-                    linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
-                    linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
-                    linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
-
-                    var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
-                    if (ReadJurnal.@event == "LoadGame")
+                    Debug.Print("Jurnal krok B5");
+                    var f = new NumberFormatInfo { NumberGroupSeparator = " " };
+                    //var s = d.ToString("n", f); // 2 000 000.00
+                    EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
+                    LinkLabel.Link links = new LinkLabel.Link();
+                    Debug.Print("Jurnal krok B6");
+                    if (ReadJurnal.Ship_Localised == "SRV Scarab")
                     {
-                        var f = new NumberFormatInfo { NumberGroupSeparator = " " };
-                        //var s = d.ToString("n", f); // 2 000 000.00
-                        EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
-                        LinkLabel.Link links = new LinkLabel.Link();
-                        if (ReadJurnal.Ship_Localised == "SRV Scarab")
-                        {
-                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
-                            EDF1.instance.shipName.Links.Remove(links);
-                            links.Enabled = false;
-                            EDF1.instance.shipName.Links.Add(links);
-                        }
-                        else
-                        {
-                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
-                            EDF1.instance.shipName.Links.Remove(links);
-                            links.Enabled = true;
-                            EDF1.instance.shipName.Links.Add(links);
-                        }
-
+                        Debug.Print("Jurnal krok B7");
+                        EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                        EDF1.instance.shipName.Links.Remove(links);
+                        links.Enabled = false;
+                        EDF1.instance.shipName.Links.Add(links);
+                    }
+                    else
+                    {
+                        Debug.Print("Jurnal krok B8");
+                        EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                        EDF1.instance.shipName.Links.Remove(links);
+                        links.Enabled = true;
+                        EDF1.instance.shipName.Links.Add(links);
+                    }
+                    Debug.Print("Jurnal krok B9");
                     EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
-                    }
-                    else if (ReadJurnal.@event == "Location")
+                }
+                else if (ReadJurnal.@event == "Location")
+                {
+                    Debug.Print("Jurnal krok B10");
+                    EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
+                    EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
+                }
+                else if (ReadJurnal.@event == "SuitLoadout")
+                {
+                    Debug.Print("Jurnal krok B11");
+                    EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
+                }
+                else if (ReadJurnal.@event == "Loadout")
+                {
+                    Debug.Print("Jurnal krok B12");
+                    byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
+
+                    using (var outputStream = new MemoryStream())
                     {
-                        EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
-                        EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
+                        Debug.Print("Jurnal krok B13");
+                        using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                        gZipStream.Write(inputBytes, 0, inputBytes.Length);
+
+                        var outputBytes = outputStream.ToArray();
+
+                        var outputbase64 = Convert.ToBase64String(outputBytes);
+
+                        outputbase64 = outputbase64.Replace("=", "%3D");
+                        coriolis_s = "https://coriolis.io/import?data=" + outputbase64;
+
+                        EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64;
                     }
-                    else if (ReadJurnal.@event == "SuitLoadout")
-                    {
-                        EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
-                    }
-                    else if (ReadJurnal.@event == "Loadout")
-                    {
-                        byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
-
-                        using (var outputStream = new MemoryStream())
-                        {
-                            using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
-                                gZipStream.Write(inputBytes, 0, inputBytes.Length);
-
-                            var outputBytes = outputStream.ToArray();
-
-                            var outputbase64 = Convert.ToBase64String(outputBytes);
-
-                            outputbase64 = outputbase64.Replace("=", "%3D");
-                            coriolis_s = "https://coriolis.io/import?data=" + outputbase64;
-
-                            EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64;
-                        }
 
 
-                    }
-                lastTimeStamp = ReadJurnal.timestamp;
+                }*/
+                Debug.Print("Jurnal krok B14");
+                //lastTimeStamp = ReadJurnal.timestamp;
                 offset = file.Position;
                 //    EDF1.instance.outfitValue_z.Text = lastTimeStamp.ToString();
             }
+            Debug.Print("Jurnal krok B15");
             offset = file.Position;
             file.Close();
         }
 
         public void read_file(string changeFile)
         {
+            Debug.Print("Jurnal krok C1");
             //if (offset == 0)
-           //     return;
+            //     return;
 
             string linia_jurnal;
-            
-                        
+
+            Debug.Print("Jurnal krok C2");
             FileStream file = File.Open(changeFile,FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
             StreamReader reader = new StreamReader(file);
-            
+            Debug.Print("Jurnal krok C3");
             file.Seek(offset, SeekOrigin.Begin);
-            
+            Debug.Print("Jurnal krok C4");
             while (!reader.EndOfStream)
             {
+                Debug.Print("Jurnal krok C5");
                 linia_jurnal = reader.ReadLine();
 
-                linia_jurnal = linia_jurnal.Replace("part\":{", "part_s\":{");
+                processing_line(linia_jurnal);
+                /*linia_jurnal = linia_jurnal.Replace("part\":{", "part_s\":{");
                 linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
                 linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
                 linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
-                if (linia_jurnal != "")
+                linia_jurnal = linia_jurnal.Replace("\"Items\":[", "\"Items_s\":[");*/
+
+                Debug.Print("Jurnal krok C6");
+                
+            }
+            Debug.Print("Jurnal krok C23");
+            offset = file.Position;
+            /*if (!reader.EndOfStream)
+                {
+                    do
+                    {
+                        linia_jurnal = reader.ReadLine();
+
+                        linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
+                        linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
+                        linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
+
+                        var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
+                        if (ReadJurnal.@event == "LoadGame")
+                        {
+                            var f = new NumberFormatInfo { NumberGroupSeparator = " " };
+                            //var s = d.ToString("n", f); // 2 000 000.00
+                            EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
+                            EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
+                            EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
+                        }
+                        else if (ReadJurnal.@event == "Location")
+                        {
+                            EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
+                            EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
+                        }
+                        else if (ReadJurnal.@event == "SuitLoadout")
+                        {
+                            EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
+                        }
+                        lastTimeStamp = ReadJurnal.timestamp;
+                    } while (!reader.EndOfStream);
+
+                    offset = file.Position;
+                }*/
+            Debug.Print("Jurnal krok C24");
+            file.Close();
+            
+        }
+
+        public string processing_line (String linia_jurnal)
+        {
+            //funkcja odpowiadająca za przetworzenie informacji zawartych w odczytanej lini kodu
+            linia_jurnal = replace_jurnal(linia_jurnal);
+            if (linia_jurnal != "")
+            {
+                Debug.Print("Jurnal krok C7");
+                Debug.Print("Jurnal linia: " + linia_jurnal);
+
+                if (ValidateJSON(linia_jurnal))
                 {
                     var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
 
-
+                    Debug.Print("Jurnal krok C8");
                     if (ReadJurnal.@event == "LoadGame") //Odczytujemy podstawowe informacje o lokalizacji gracza (Statek, SRV, saldo kasy, itp)
                     {
+                        Debug.Print("Jurnal krok C9");
                         var f = new NumberFormatInfo { NumberGroupSeparator = " " };
                         //var s = d.ToString("n", f); // 2 000 000.00
                         EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander;
+                        Debug.Print("Jurnal krok C10");
                         LinkLabel.Link links = new LinkLabel.Link();
                         if (ReadJurnal.Ship_Localised == "SRV Scarab")
                         {
-                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                            Debug.Print("Jurnal krok C11");
+                            EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised;
+                            Debug.Print("Jurnal krok C11a");
                             EDF1.instance.shipName.Links.Remove(links);
                             links.Enabled = false;
+                            Debug.Print("Jurnal krok C11b");
                             EDF1.instance.shipName.Links.Add(links);
                         }
                         else
                         {
-                            EDF1.instance.shipName.Text = ReadJurnal.Ship_Localised;
+                            Debug.Print("Jurnal krok C12");
+                            EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised;
+                            Debug.Print("Jurnal krok C12a");
                             EDF1.instance.shipName.Links.Remove(links);
+                            //EDF1.instance.shipName.Links.Remove(links);
                             links.Enabled = true;
+                            Debug.Print("Jurnal krok C12b");
                             EDF1.instance.shipName.Links.Add(links);
+                            //EDF1.instance.shipName.Links.Add(links);
                         }
 
-
-
-                        EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
+                        EDF1.instance.saldoValue_z.Text = null;
+                        Debug.Print("Jurnal krok C13");
+                        Debug.Print("C13: " + linia_jurnal);
+                        Debug.Print("C13 cash: " + ReadJurnal.Credits.ToString());
+                        string kasa = ReadJurnal.Credits.ToString("n", f);
+                        //EDF1.instance.saldoValue_z.Text = kasa;
+                        EDF1.instance.saldoValue_z.Text = kasa;
                     }
                     else if (ReadJurnal.@event == "Location") //odczytujemy informacje o systemie w którym gracz się znajduje i stacji jesłi statek został zadokowany
                     {
+
+                        Debug.Print("Jurnal krok C14");
                         EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
                         EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
                     }
                     else if (ReadJurnal.@event == "SuitLoadout") //odczytujemy informacje o stroju jaki ma założony gracz. Opcja dostępna dopiero po wyjściu ze statku na planetę lub stację
                     {
+                        
+                        Debug.Print("Jurnal krok C15");
                         EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
                     }
                     else if (ReadJurnal.@event == "Loadout") //odczytujemy wszystkie informacje o statku i tworzymy link do Coriolis. Informacja dostępna tylko jeśli gracz jest w statku
                     {
+                        
+                        Debug.Print("Jurnal krok C16");
                         byte[] inputBytes = Encoding.UTF8.GetBytes(linia_jurnal);
 
                         using (var outputStream = new MemoryStream())
                         {
+                            Debug.Print("Jurnal krok C17");
                             using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
                                 gZipStream.Write(inputBytes, 0, inputBytes.Length);
 
@@ -254,66 +355,153 @@ namespace ED_Informator
 
                             EDF1.coriolis = "https://coriolis.io/import?data=" + outputbase64;
                         }
-
+                        Debug.Print("Jurnal krok C18");
 
                     }
-                    else if (ReadJurnal.@event == "MaterialCollected")
-                    {
+                    else if (ReadJurnal.@event == "MaterialCollected")//odczytujemy jaki materiał został zebrany
+                    {                        
+                        Debug.Print("Jurnal krok C19");
                         int rowID = EDF1.instance.listaZnalezisk_z.Rows.Add();
                         DataGridViewRow row = EDF1.instance.listaZnalezisk_z.Rows[rowID];
+                        if (rowID >= 1)
+                            EDF1.instance.listaZnalezisk_z.Rows[rowID - 1].Selected = false;
                         row.Cells["col_time"].Value = ReadJurnal.timestamp;
                         row.Cells["col_event"].Value = "Zebrano materiał";
                         row.Cells["col_desc"].Value = ReadJurnal.Name_Localised + " w ilości: " + ReadJurnal.Count.ToString();
                         row.Cells["col_info"].Value = ReadJurnal.Category + ": ??????, Łączna ilość: xxx";
+                        int nColumnIndex = 0;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Cells[nColumnIndex].Selected = true;
+                        Debug.Print("Jurnal krok C20");
+                        //In case if you want to scroll down as well.
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = rowID;
+                        Debug.Print("Jurnal krok C21");
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = EDF1.instance.listaZnalezisk_z.RowCount - 2;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Selected = false;
 
+                        //EDF1.instance.listaZnalezisk_z.CurrentCell = EDF1.instance.listaZnalezisk_z.Rows[EDF1.instance.listaZnalezisk_z.RowCount - 1].Cells[0];
+                    }
+                    else if (ReadJurnal.@event== "FSDJump")//odczytujemy jaki system został odwiedzony
+                    {
+                        int rowID = EDF1.instance.listaZnalezisk_z.Rows.Add();
+                        DataGridViewRow row = EDF1.instance.listaZnalezisk_z.Rows[rowID];
+                        if (rowID >= 1)
+                            EDF1.instance.listaZnalezisk_z.Rows[rowID - 1].Selected = false;
+                        row.Cells["col_time"].Value = ReadJurnal.timestamp;
+                        row.Cells["col_event"].Value = "Wizyta w systemie";
+                        row.Cells["col_desc"].Value = "Nazwa systemu: " + ReadJurnal.StarSystem;
+                        //Math.Round()
+                        row.Cells["col_info"].Value = "Przebyta odległość: "+ReadJurnal.JumpDist.ToString()+"ly; Zużyto paliwa: "+Math.Round(ReadJurnal.FuelUsed,2).ToString()+"t; pozostało: "+ Math.Round(ReadJurnal.FuelLevel,2).ToString()+"t";
+                        int nColumnIndex = 0;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Cells[nColumnIndex].Selected = true;
+                        Debug.Print("Jurnal krok C22");
+                        //In case if you want to scroll down as well.
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = rowID;
+                        Debug.Print("Jurnal krok C23");
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = EDF1.instance.listaZnalezisk_z.RowCount - 2;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Selected = false;
 
                     }
+                    else if (ReadJurnal.@event == "Scan")//odczytujemy dane scanowania systemu
+                    {
+                        int rowID = EDF1.instance.listaZnalezisk_z.Rows.Add();
+                        DataGridViewRow row = EDF1.instance.listaZnalezisk_z.Rows[rowID];
+                        if (rowID >= 1)
+                            EDF1.instance.listaZnalezisk_z.Rows[rowID - 1].Selected = false;
+                        row.Cells["col_time"].Value = ReadJurnal.timestamp;
+                        row.Cells["col_event"].Value = "Scan systemu";
+                        if (ReadJurnal.ScanType =="AutoScan")
+                        {
+                            row.Cells["col_desc"].Value = "Automatyczne skanowanie systemu: " + ReadJurnal.StarSystem;
+                        }
+                        //Math.Round()
 
+                        string opisStar = Star_Class(ReadJurnal.StarType);
+                        
+                        row.Cells["col_info"].Value = opisStar +"; Masa: "+ Math.Round(ReadJurnal.StellarMass, 2).ToString()+"MS; Wiek: "+ ReadJurnal.Age_MY.ToString()+"mln lat; Promień: "+ Math.Round((ReadJurnal.Radius/696340000),2) +"SR; Odległość: "+Math.Round(ReadJurnal.DistanceFromArrivalLS,2)+"ls"; 
+                        int nColumnIndex = 0;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Cells[nColumnIndex].Selected = true;
+                        Debug.Print("Jurnal krok C22");
+                        //In case if you want to scroll down as well.
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = rowID;
+                        Debug.Print("Jurnal krok C23");
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = EDF1.instance.listaZnalezisk_z.RowCount - 2;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Selected = false;
 
+                    }//FSSAllBodiesFound
+                    else if (ReadJurnal.@event == "FSSAllBodiesFound")//odczytujemy dane scanowania systemu
+                    {
+                        int rowID = EDF1.instance.listaZnalezisk_z.Rows.Add();
+                        DataGridViewRow row = EDF1.instance.listaZnalezisk_z.Rows[rowID];
+                        if (rowID >= 1)
+                            EDF1.instance.listaZnalezisk_z.Rows[rowID - 1].Selected = false;
+                        row.Cells["col_time"].Value = ReadJurnal.timestamp;
+                        row.Cells["col_event"].Value = "Skan systemu";
+                        row.Cells["col_desc"].Value = "FSS - Znaleziono wszystkie ciała niebieskie";
+                        row.Cells["col_info"].Value = "W systemie " + ReadJurnal.SystemName + " liczba znalezionych ciał wynosi: " +ReadJurnal.Count.ToString();
+                        int nColumnIndex = 0;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Cells[nColumnIndex].Selected = true;
+                        Debug.Print("Jurnal krok C22");
+                        //In case if you want to scroll down as well.
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = rowID;
+                        Debug.Print("Jurnal krok C23");
+                        EDF1.instance.listaZnalezisk_z.FirstDisplayedScrollingRowIndex = EDF1.instance.listaZnalezisk_z.RowCount - 2;
+                        EDF1.instance.listaZnalezisk_z.Rows[rowID].Selected = false;
 
-                    //                EDF1.instance.outfitValue_z.Text = lastTimeStamp.ToString();
+                    }
+                    Debug.Print("Jurnal krok C22");
 
                 }
+                //                EDF1.instance.outfitValue_z.Text = lastTimeStamp.ToString();
+
             }
-                offset = file.Position;
-                /*if (!reader.EndOfStream)
-                    {
-                        do
-                        {
-                            linia_jurnal = reader.ReadLine();
+            return null;
+        }        
 
-                            linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
-                            linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
-                            linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
+        public string Star_Class(String StarType)
+        {
+            string opis="";
+            if (StarType == "O")
+                     opis = "Błękitna gwiazda O Ciągu Głównego";
+            else if (StarType == "B")
+                    opis = "Jasnobłękitna gwiazda B Ciągu Głównego";
+            else if (StarType == "A")
+                    opis = "Niebiesko-Biała gwiazda A Ciągu Głównego";
+            else if (StarType == "F")
+                    opis = "Biała gwiazda F Ciągu Głównego";
+            else if (StarType == "G")
+                    opis = "Biało-Żółta gwiazda G Ciągu Głównego";
+            else if (StarType == "K")
+                    opis = "Żółto-Pomarańczowa gwiazda K Ciągu Głównego";
+            else if (StarType == "L")
+                    opis = "Czerwona gwiazda L Ciągu Głównego";
 
-                            var ReadJurnal = JsonConvert.DeserializeObject<ReadJurnal>(linia_jurnal);
-                            if (ReadJurnal.@event == "LoadGame")
-                            {
-                                var f = new NumberFormatInfo { NumberGroupSeparator = " " };
-                                //var s = d.ToString("n", f); // 2 000 000.00
-                                EDF1.instance.cmdrName_z.Text = ReadJurnal.Commander; ;
-                                EDF1.instance.shipName_z.Text = ReadJurnal.Ship_Localised; ;
-                                EDF1.instance.saldoValue_z.Text = ReadJurnal.Credits.ToString("n", f);
-                            }
-                            else if (ReadJurnal.@event == "Location")
-                            {
-                                EDF1.instance.systemValue_z.Text = ReadJurnal.StarSystem;
-                                EDF1.instance.stationName_z.Text = ReadJurnal.StationName;
-                            }
-                            else if (ReadJurnal.@event == "SuitLoadout")
-                            {
-                                EDF1.instance.outfitValue_z.Text = ReadJurnal.SuitName_Localised + " (" + ReadJurnal.LoadoutName + ")";
-                            }
-                            lastTimeStamp = ReadJurnal.timestamp;
-                        } while (!reader.EndOfStream);
-
-                        offset = file.Position;
-                    }*/
-
-                file.Close();
             
+            return opis;
+        }
+        //modyfikator niektórych wpisów jurnala
+        public string replace_jurnal(String linia_jurnal)
+        {
+            linia_jurnal = linia_jurnal.Replace("part\":{", "part_s\":{");
+            linia_jurnal = linia_jurnal.Replace("Combat\":{", "Combat_s\":{");
+            linia_jurnal = linia_jurnal.Replace("\"FuelCapacity\":{", "\"FuelCapacitys\":{");
+            linia_jurnal = linia_jurnal.Replace("\"Multicrew\":{", "\"Multicrew_s\":{");
+            linia_jurnal = linia_jurnal.Replace("\"Items\":[ {", "\"Items_s\":[ {");
+            return linia_jurnal;
+
         }
 
+        public static bool ValidateJSON(string s)
+        {
+            try
+            {
+                JToken.Parse(s);
+                return true;
+            }
+            catch (JsonReaderException ex)
+            {
+                return false;
+            }
+        }
         //odczytujemy ED JUrnal - dane główne
         public class ReadJurnal
         {
@@ -407,7 +595,7 @@ namespace ED_Informator
             public string BodyType { get; set; }
             public List<Faction> Factions { get; set; }
             public SystemFaction SystemFaction { get; set; }
-            public List<Item> Items { get; set; }
+            public List<Item> Items_s { get; set; }
             public List<Component> Components { get; set; }
             public List<object> Consumables { get; set; }
             public List<Datum> Data { get; set; }
@@ -524,7 +712,8 @@ namespace ED_Informator
             public double ShieldHealth { get; set; }
             public string LegalStatus { get; set; }
             //////////////////////////////////
-            
+            public List<string> Items { get; set; }
+            public int Cost { get; set; }
 
 
 

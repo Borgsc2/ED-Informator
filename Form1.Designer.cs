@@ -67,6 +67,9 @@ namespace ED_Informator
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.shipName = new System.Windows.Forms.LinkLabel();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.col_time = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_event = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_desc = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -418,7 +421,7 @@ namespace ED_Informator
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(448, 102);
+            this.button2.Location = new System.Drawing.Point(450, 94);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(88, 27);
             this.button2.TabIndex = 1;
@@ -439,31 +442,72 @@ namespace ED_Informator
             this.shipName.VisitedLinkColor = System.Drawing.Color.Blue;
             this.shipName.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.shipName_LinkClicked);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(543, 45);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(105, 30);
+            this.button3.TabIndex = 17;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(684, 46);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(109, 28);
+            this.button4.TabIndex = 18;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(810, 45);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(108, 29);
+            this.button5.TabIndex = 19;
+            this.button5.Text = "button5";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // col_time
             // 
+            this.col_time.FillWeight = 111F;
             this.col_time.HeaderText = "Czas";
             this.col_time.Name = "col_time";
+            this.col_time.Width = 111;
             // 
             // col_event
             // 
+            this.col_event.FillWeight = 123F;
             this.col_event.HeaderText = "Zdarzenie";
             this.col_event.Name = "col_event";
+            this.col_event.Width = 123;
             // 
             // col_desc
             // 
+            this.col_desc.FillWeight = 234F;
             this.col_desc.HeaderText = "Opis";
             this.col_desc.Name = "col_desc";
+            this.col_desc.Width = 234;
             // 
             // col_info
             // 
+            this.col_info.FillWeight = 444F;
             this.col_info.HeaderText = "Informacje";
             this.col_info.Name = "col_info";
+            this.col_info.Width = 444;
             // 
             // EDF1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = global::ED_Informator.Properties.Settings.Default.Size;
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.shipName);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.stationName);
@@ -539,6 +583,9 @@ namespace ED_Informator
         private System.Windows.Forms.Button button2;
         public System.Windows.Forms.LinkLabel shipName;
         private System.Windows.Forms.DataGridView listaZnalezisk;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_time;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_event;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_desc;
